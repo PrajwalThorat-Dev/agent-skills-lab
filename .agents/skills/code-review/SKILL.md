@@ -1,6 +1,7 @@
 ---
 name: code-review
 description: Performs a structured, honest code review covering correctness, security, readability, and performance. Use when the user asks for a code review, feedback, or critique on a snippet, file, or PR, or asks "is this code good" / "what's wrong with this".
+version: 2.0.0
 tags: code-quality, review, engineering
 ---
 
@@ -9,66 +10,88 @@ tags: code-quality, review, engineering
 ## Tone
 Give a direct, technically grounded assessment — the kind a competent senior
 engineer would give in a real review, not a customer-service response. Point
-out real strengths only where they're actually notable (e.g. a genuinely clean
-abstraction, a well-handled edge case), and spend the majority of the review
-on what needs to change. Avoid throwaway compliments that don't inform any
-decision the author would make.
+out real strengths only where they're actually notable, and spend the
+majority of the review on what needs to change.
+
+## Do NOT
+- Do NOT invent security issues that aren't actually present in the code shown.
+- Do NOT mention performance unless it's meaningful at the code's realistic scale.
+- Do NOT praise code just to soften the review — every positive statement
+  must point to something specific and non-obvious.
+- Do NOT recommend a rewrite or major refactor without justifying why the
+  current approach is actually insufficient.
+- Do NOT comment on style/formatting unless it genuinely affects readability
+  (see `references/severity-levels.md` for what counts as Nitpick vs Minor).
+- Do NOT produce a finding without evidence — see "Finding format" below.
 
 ## Review process
+Perform these steps sequentially. Do not skip a step, and do not jump to a
+verdict before completing all of them.
 
-Work through these steps in order. Don't skip ahead to a verdict before
-completing the earlier steps — each one informs the next.
-
-### Step 1: Understand context and intent
-Before judging anything, figure out what the code is trying to do. Read
-function/variable names, comments, and structure to infer the intended
-behavior. If intent is unclear from the code alone, state your assumption
-explicitly in the review rather than guessing silently.
+### Step 1: Context and intent
+Infer what the code is trying to do from names, comments, and structure. If
+intent is unclear, state your assumption explicitly rather than guessing
+silently.
 
 ### Step 2: Correctness
-Check for logic errors, incorrect conditionals, off-by-one errors, unhandled
-edge cases (empty input, null/None, boundary values), and whether the code
-actually does what Step 1 determined it's supposed to do.
+Look for:
+- off-by-one errors
+- null/None/undefined handling
+- empty collection handling
+- incorrect conditionals
+- race conditions on shared state
+- mutation bugs (unintended side effects)
+- resource leaks (unclosed files, connections, handles)
 
 ### Step 3: Security
-Look for the obvious classes of issues: injection risks, unsanitized input,
-hardcoded secrets/credentials, unsafe deserialization, missing auth/permission
-checks, and unsafe use of eval/exec-like constructs. Only flag what's
-genuinely relevant to the code shown — don't pad the review with generic
-security disclaimers.
+Look for:
+- injection risks (SQL, command, template)
+- XSS / unsanitized output
+- SSRF
+- path traversal
+- hardcoded secrets/credentials
+- missing authentication/authorization checks
+- unsafe eval/exec-like constructs
 
-### Step 4: Readability & maintainability
-Assess naming clarity, function/method length, nesting depth, duplication,
-and whether someone unfamiliar with this code could maintain it six months
-from now. Reference `references/severity-levels.md` to calibrate how serious
-a given issue is before including it.
+Only flag what's genuinely present — do not pad with generic disclaimers.
+
+### Step 4: Readability and maintainability
+Assess naming clarity, function length, nesting depth, and duplication.
+Classify severity using `references/severity-levels.md`.
 
 ### Step 5: Performance
-Only raise performance concerns if they're actually consequential for the
-code's apparent context (e.g. an O(n²) loop over a large expected dataset).
-Don't invent performance concerns for trivial or clearly small-scale code.
+Only raise a concern if it's consequential given the code's apparent scale
+(e.g. an O(n²) loop over data expected to be large). Do not invent concerns
+for small or clearly trivial code.
 
 ### Step 6: Verdict
-Summarize findings grouped by severity (Critical / Major / Minor / Nitpick —
-see `references/severity-levels.md` for definitions). End with a one-line
-overall assessment: is this mergeable as-is, mergeable with changes, or does
-it need rework.
+Group findings by severity (Critical / Major / Minor / Nitpick — definitions
+in `references/severity-levels.md`). The verdict must be consistent with the
+highest severity found: a single Critical finding means the code cannot be
+"Mergeable as-is."
+
+## Finding format
+Every finding must include three parts:
+
+- **Evidence** — the specific line, function, or pattern in question
+- **Impact** — why it actually matters
+- **Recommendation** — what to do about it
+
+A finding without all three is incomplete. This is what prevents vague
+statements like "naming could be better" from making it into a review.
+
+## Optional static analysis
+If `scripts/static_check.py` is available and relevant, it can be run against
+the file being reviewed to surface objective signals (unused imports, long
+functions, deep nesting) as supporting evidence for Step 4 findings — not as
+a replacement for manual review.
 
 ## Output format
-Format the final review using the structure in `assets/review-template.md`.
+Use `templates/review-template.md` to structure the final output.
 
-## Supporting resources
-- `references/review-workflow.md` — full visual workflow diagram and
-  explanation of how the six steps connect
-- `references/severity-levels.md` — definitions for Critical/Major/Minor/Nitpick
-  classification used in Steps 4 and 6
-- `assets/review-template.md` — output template to fill in for the final review
-- `scripts/static_check.py` — optional helper script that can be run against
-  a file to surface objective signals (unused imports, basic complexity
-  metrics) before or during Step 4
-
-## Notes for the agent
-This skill activates fully once selected — all six steps and referenced files
-are relevant to producing a complete review. Read `references/severity-levels.md`
-before finalizing Step 4 and Step 6 output, since severity language should be
-consistent across reviews.
+## Supporting files (read only when needed)
+- `references/severity-levels.md` — read before finalizing Step 4 and Step 6,
+  needed to classify findings consistently
+- `templates/review-template.md` — read when producing final output
+- `references/review-workflow.md` — maintainer documentation only; not
+  required reading during a normal review

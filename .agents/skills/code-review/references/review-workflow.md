@@ -1,54 +1,29 @@
-# Code Review Workflow
+# Code Review Workflow (Maintainer Documentation)
 
-This document explains how the six review steps connect and depend on one
-another. See the accompanying diagram: `references/workflow-diagram.svg`.
+This file is documentation for humans maintaining this skill. It is **not**
+required reading during a normal review run — `SKILL.md` contains everything
+the model needs to execute the process. This file just explains the design
+reasoning behind the step order, for whoever edits this skill later.
 
-## Why the order matters
+See `workflow-diagram.svg` for the visual flow.
 
-The steps are sequential, not a checklist to complete in any order. Each step
-narrows or informs the next:
+## Why this order
 
-- **Step 1 (Context)** establishes what "correct" even means for this code.
-  Skipping this leads to Step 2 judging the code against the wrong intent.
-- **Step 2 (Correctness)** and **Step 3 (Security)** are both about whether
-  the code is *safe to run*, not whether it's *pleasant to read*. These come
-  before readability on purpose — a beautifully clean function that corrupts
-  data is still a Critical finding, not a Minor one.
-- **Step 4 (Readability)** only makes sense once you know the code works.
-  Commenting on naming conventions in code that has a Critical bug is a waste
-  of the review's attention — fix-worthy issues get surfaced first.
-- **Step 5 (Performance)** is deliberately placed last among the analysis
-  steps because it's the most context-dependent and easiest to over-apply.
-  Performance concerns should never be raised in isolation from Steps 1–4.
-- **Step 6 (Verdict)** is the synthesis step — nothing new is discovered
-  here, findings from Steps 2–5 are simply organized by severity (see
-  `references/severity-levels.md`) and reduced to a single actionable call.
+- **Context before everything** — Step 1 defines what "correct" means for
+  this specific code. Every later step depends on this being right.
+- **Safety before style** — Correctness and Security (Steps 2-3) come before
+  Readability (Step 4) deliberately. A clean-looking function that corrupts
+  data is still worse than an ugly function that works safely.
+- **Performance last among analysis steps** — it's the most context-dependent
+  and the easiest step to over-apply if raised too early or without the
+  grounding from earlier steps.
+- **Verdict is synthesis, not discovery** — Step 6 shouldn't surface anything
+  new. It only organizes what Steps 2-5 already found.
 
-## What "no skipping ahead" means in practice
+## If you're modifying this skill
 
-If Step 2 surfaces a Critical bug, don't let that shortcut Steps 3–5 — the
-review should still be thorough. "No skipping ahead" refers to not jumping to
-a verdict prematurely, not to stopping analysis early once one issue is found.
-
-## Diagram
-
-The visual flow is captured in `workflow-diagram.svg`:
-
-```
-Step 1: Context & Intent
-      ↓
-Step 2: Correctness
-      ↓
-Step 3: Security
-      ↓
-Step 4: Readability & Maintainability   ← calibrated by severity-levels.md
-      ↓
-Step 5: Performance
-      ↓
-Step 6: Verdict                          ← groups findings by severity
-      ↓
-Final Review Output                      ← formatted via review-template.md
-```
-
-Each arrow represents "informs," not "replaces" — later steps build on
-earlier findings rather than overwriting them.
+- Changing severity definitions? Edit `references/severity-levels.md` only —
+  don't duplicate definitions here or in `SKILL.md`.
+- Changing output structure? Edit `templates/review-template.md` only.
+- Changing the steps themselves? Edit `SKILL.md`'s Review Process section —
+  this file should be updated afterward to reflect *why*, not *what*.
