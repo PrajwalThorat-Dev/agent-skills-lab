@@ -1,0 +1,66 @@
+<svg viewBox="0 0 700 900" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#555"/>
+    </marker>
+  </defs>
+
+  <style>
+    .box { fill: #eef3fb; stroke: #3b5f8a; stroke-width: 2; rx: 10; }
+    .title { font-size: 16px; font-weight: bold; fill: #1c2b3a; }
+    .desc { font-size: 12px; fill: #333; }
+    .arrow { stroke: #555; stroke-width: 2; marker-end: url(#arrow); fill: none; }
+    .step-num { font-size: 13px; fill: #3b5f8a; font-weight: bold; }
+  </style>
+
+  <text x="350" y="35" text-anchor="middle" font-size="20" font-weight="bold" fill="#1c2b3a">Code Review Workflow</text>
+
+  <!-- Step 1 -->
+  <rect class="box" x="150" y="60" width="400" height="80"/>
+  <text class="step-num" x="170" y="85">STEP 1</text>
+  <text class="title" x="170" y="105">Understand Context &amp; Intent</text>
+  <text class="desc" x="170" y="125">Infer what the code is trying to do</text>
+  <line class="arrow" x1="350" y1="140" x2="350" y2="170"/>
+
+  <!-- Step 2 -->
+  <rect class="box" x="150" y="170" width="400" height="80"/>
+  <text class="step-num" x="170" y="195">STEP 2</text>
+  <text class="title" x="170" y="215">Correctness</text>
+  <text class="desc" x="170" y="235">Logic errors, edge cases, does it do what it should</text>
+  <line class="arrow" x1="350" y1="250" x2="350" y2="280"/>
+
+  <!-- Step 3 -->
+  <rect class="box" x="150" y="280" width="400" height="80"/>
+  <text class="step-num" x="170" y="305">STEP 3</text>
+  <text class="title" x="170" y="325">Security</text>
+  <text class="desc" x="170" y="345">Injection, secrets, auth checks, unsafe patterns</text>
+  <line class="arrow" x1="350" y1="360" x2="350" y2="390"/>
+
+  <!-- Step 4 -->
+  <rect class="box" x="150" y="390" width="400" height="80"/>
+  <text class="step-num" x="170" y="415">STEP 4</text>
+  <text class="title" x="170" y="435">Readability &amp; Maintainability</text>
+  <text class="desc" x="170" y="455">Naming, structure, duplication — calibrated via severity-levels.md</text>
+  <line class="arrow" x1="350" y1="470" x2="350" y2="500"/>
+
+  <!-- Step 5 -->
+  <rect class="box" x="150" y="500" width="400" height="80"/>
+  <text class="step-num" x="170" y="525">STEP 5</text>
+  <text class="title" x="170" y="545">Performance</text>
+  <text class="desc" x="170" y="565">Only flagged if consequential at realistic scale</text>
+  <line class="arrow" x1="350" y1="580" x2="350" y2="610"/>
+
+  <!-- Step 6 -->
+  <rect class="box" x="150" y="610" width="400" height="90" fill="#fbeeee" stroke="#8a3b3b"/>
+  <text class="step-num" x="170" y="635" fill="#8a3b3b">STEP 6</text>
+  <text class="title" x="170" y="655">Verdict</text>
+  <text class="desc" x="170" y="675">Group findings by severity, give mergeable / needs-rework call</text>
+
+  <!-- Output arrow -->
+  <line class="arrow" x1="350" y1="700" x2="350" y2="730"/>
+  <rect x="230" y="730" width="240" height="60" rx="10" fill="#eafaf0" stroke="#2f7a4f" stroke-width="2"/>
+  <text x="350" y="755" text-anchor="middle" font-size="14" font-weight="bold" fill="#1c3f2a">Final Review Output</text>
+  <text x="350" y="775" text-anchor="middle" font-size="11" fill="#333">(formatted via assets/review-template.md)</text>
+
+  <text x="350" y="850" text-anchor="middle" font-size="11" fill="#777">Each step informs the next — steps are not skipped or reordered.</text>
+</svg>
